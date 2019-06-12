@@ -1,10 +1,11 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  testMatch: ["**/e2e/?(*.)+(spec|test).[t]s?(x)"],
+  testMatch: ["**/unit/?(*.)+(spec|test).[t]s?(x)"],
   clearMocks: true,
-  roots: ["<rootDir>/test/e2e"],
+  roots: ["<rootDir>/test/unit"],
   verbose: false,
+  bail: true,
   globals: {
     "ts-jest": {
       isolatedModules: true,

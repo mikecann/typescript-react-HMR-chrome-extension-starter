@@ -1,6 +1,6 @@
 import { runCLI } from "jest";
 import path from "path";
 
-export async function runE2ETests() {
-  await runCLI({ config: path.join(process.cwd(), "jest.config.e2e.js") } as any, [process.cwd()]);
+export async function runUnitTests() {
+  await runCLI({ config: path.join(process.cwd(), "jest.unit.config.js") } as any, [process.cwd()]);
 }

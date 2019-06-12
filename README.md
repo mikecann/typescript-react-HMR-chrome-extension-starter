@@ -36,6 +36,14 @@ I have added husky and pretty-quick in the mix so that prettier is run before ea
 
 This project supports storybook out of the gate. This is handy to develop your react components in isolation.
 
+## E2E Tests
+
+E2E tests are powered by puppeteer. Over some time I have developed a good way of runnings these and have thus included my microframework in here to help with that.
+
+`gulp runE2ETests` or `yarn e2e`
+
+I am running a custom reporter that only logs if a test fails. You can disable this by commenting out the reporters in `jest.e2e.config.js`.
+
 ## Env Vars
 
 To include an environment variable in the build it must start with `REACT_APP` and then it will automatically be included.

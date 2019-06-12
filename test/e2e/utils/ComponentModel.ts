@@ -42,6 +42,10 @@ class ComponentPropertyModel extends AbstractModel {
     return this.tools.valueOf(this.propId);
   }
 
+  innerText() {
+    return this.tools.innerText(this.propId);
+  }
+
   attribute(attributeName: string) {
     return this.tools.attribute(this.propId, attributeName);
   }

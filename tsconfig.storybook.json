@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "./storybook/",
     "sourceMap": true,
     "module": "commonjs",
     "target": "es6",

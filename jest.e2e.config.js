@@ -5,6 +5,7 @@ module.exports = {
   clearMocks: true,
   roots: ["<rootDir>/test/e2e"],
   verbose: false,
+  bail: true,
   globals: {
     "ts-jest": {
       isolatedModules: true,
@@ -13,8 +14,8 @@ module.exports = {
       },
     },
   },
-  reporters: [
-    "<rootDir>/test/reporters/log-on-fail-reporter.js",
-    "<rootDir>/test/reporters/summary.js",
-  ],
+  // reporters: [
+  //   "<rootDir>/test/reporters/log-on-fail-reporter.js",
+  //   "<rootDir>/test/reporters/summary.js",
+  // ],
 };
