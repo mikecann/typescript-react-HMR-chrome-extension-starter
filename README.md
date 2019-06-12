@@ -6,6 +6,8 @@ Getting HMR to work was a bit of a pain. For now I have locked `webpack-dev-serv
 
 Using gulp is perhaps an unusual choice for build tools in this day and age but IMO its still a good tool better than `nps` for more complex requirements such as building chrome extensions.
 
+This package supports automatic uploading to the chrome webstore too, super handy for CI work.
+
 ## Technologies
 
 Typescript, React, Webpack, Hot Module Replacement, React Hooks

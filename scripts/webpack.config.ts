@@ -90,11 +90,7 @@ export function makeWebpackConfig(options: Options): Configuration {
       path: path.join(__dirname, "../dist"),
       filename: "[name].js",
     },
-    // optimization: {
-    //   splitChunks: {
-    //     chunks: "all",
-    //   },
-    // },
+    // Borrowed from: https://hackernoon.com/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
     optimization: {
       runtimeChunk: "single",
       splitChunks: {
@@ -105,11 +101,7 @@ export function makeWebpackConfig(options: Options): Configuration {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name(module) {
-              // get the name. E.g. node_modules/packageName/not/this/part.js
-              // or node_modules/packageName
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-
-              // npm package names are URL-safe, but some servers don't like @ symbols
               return `npm.${packageName.replace("@", "")}`;
             },
           },
