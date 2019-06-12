@@ -1,42 +1,22 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 
-class Counter extends React.Component<{}, { count: number }> {
-  interval: number;
+export function Counter() {
+  const [count, setCount] = useState(0);
 
-  constructor(props: any) {
-    super(props);
-    this.state = { count: 0 };
-  }
+  const generateString1 = () => "1";
+  const generateString2 = () => "1";
 
-  componentDidMount() {
-    this.interval = window.setInterval(
-      () => this.setState(prevState => ({ count: prevState.count + 1 })),
-      200
-    );
-  }
+  useEffect(() => {
+    const interval = setInterval(() => setCount(prev => prev + 1), 500);
+    return () => clearInterval(interval);
+  }, []);
 
-  generateString1() {
-    // you can update this method, and it will work
-    return "1";
-  }
+  console.log("render!", count, generateString1(), generateString2());
 
-  generateString2 = () => {
-    // this one will not
-    return "1";
-  };
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  render() {
-    console.log("render!!", this.state.count, this.generateString1(), this.generateString2());
-    return (
-      <span>
-        {this.state.count} - {this.generateString1()} - {this.generateString2()}
-      </span>
-    );
-  }
+  return (
+    <span>
+      {count} - {generateString1()} - {generateString2()}
+    </span>
+  );
 }
-
-export default Counter;

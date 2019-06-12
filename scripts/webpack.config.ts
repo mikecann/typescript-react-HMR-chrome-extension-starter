@@ -20,7 +20,7 @@ const common: Configuration = {
     contentScript: path.join(__dirname, srcDir + "contentScript/index.ts"),
   },
   output: {
-    path: path.join(__dirname, "../dist/js"),
+    path: path.join(__dirname, "../dist"),
     filename: "[name].js",
   },
   module: {
@@ -34,43 +34,24 @@ const common: Configuration = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
+    alias: {
+      "react-dom": "@hot-loader/react-dom",
+    },
   },
   plugins: [
-    new webpack.ProgressPlugin(),
-    new CleanWebpackPlugin({
-      dry: false,
-      cleanOnceBeforeBuildPatterns: ["../../dist/**/*"],
-      dangerouslyAllowCleanPatternsOutsideProject: true,
-    }),
-    new ForkTsCheckerWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "../public", "browserAction.html"),
-      filename: "../browserAction.html",
-      chunks: ["browserAction"],
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "../public", "options.html"),
-      filename: "../options.html",
-      chunks: ["options"],
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "../public", "background.html"),
-      filename: "../background.html",
-      chunks: ["background"],
-    }),
-  ],
-};
-
-export const devWebpackConfig = merge(common, {
-  devtool: "inline-source-map",
-  mode: "development",
-  plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.ProgressPlugin(),
+    // new CleanWebpackPlugin({
+    //   //dry: true,
+    //   // cleanOnceBeforeBuildPatterns: ["../../dist/**/*"],
+    //   // dangerouslyAllowCleanPatternsOutsideProject: true,
+    // }),
+    new ForkTsCheckerWebpackPlugin(),
     new CopyPlugin(
       [
         {
           from: ".",
-          to: "../",
+          to: ".",
           ignore: ["*.html"],
           transform: function(content, path) {
             if (path.endsWith("manifest.json"))
@@ -93,8 +74,28 @@ export const devWebpackConfig = merge(common, {
       ],
       { context: "public" }
     ),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "../public", "browserAction.html"),
+      filename: "browserAction.html",
+      chunks: ["browserAction"],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "../public", "options.html"),
+      filename: "options.html",
+      chunks: ["options"],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "../public", "background.html"),
+      filename: "background.html",
+      chunks: ["background"],
+    }),
     new WriteFilePlugin(),
   ],
+};
+
+export const devWebpackConfig = merge(common, {
+  devtool: "inline-source-map",
+  mode: "development",
 });
 
 export const prodWebpackConfig = merge(common, {
