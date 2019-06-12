@@ -2,11 +2,13 @@
 
 import path from "path";
 import CopyPlugin from "copy-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import merge from "webpack-merge";
 import { Configuration } from "webpack";
 import webpack from "webpack";
 import WriteFilePlugin from "write-file-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
 const srcDir = "../src/";
 
@@ -14,7 +16,7 @@ const common: Configuration = {
   entry: {
     browserAction: path.join(__dirname, srcDir + "browserAction/index.ts"),
     options: path.join(__dirname, srcDir + "options/index.ts"),
-    background: path.join(__dirname, srcDir + "background/index.ts"),
+    background: path.join(__dirname, srcDir + "background/index.tsx"),
     contentScript: path.join(__dirname, srcDir + "contentScript/index.ts"),
   },
   output: {
@@ -25,7 +27,7 @@ const common: Configuration = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "ts-loader",
+        use: "awesome-typescript-loader",
         exclude: /node_modules/,
       },
     ],
@@ -34,7 +36,13 @@ const common: Configuration = {
     extensions: [".ts", ".tsx", ".js"],
   },
   plugins: [
-    //new CopyPlugin([{ from: ".", to: "../" }], { context: "public" }),
+    new webpack.ProgressPlugin(),
+    new CleanWebpackPlugin({
+      dry: false,
+      cleanOnceBeforeBuildPatterns: ["../../dist/**/*"],
+      dangerouslyAllowCleanPatternsOutsideProject: true,
+    }),
+    new ForkTsCheckerWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "../public", "browserAction.html"),
       filename: "../browserAction.html",
@@ -56,7 +64,37 @@ const common: Configuration = {
 export const devWebpackConfig = merge(common, {
   devtool: "inline-source-map",
   mode: "development",
-  plugins: [new webpack.HotModuleReplacementPlugin(), new WriteFilePlugin()],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyPlugin(
+      [
+        {
+          from: ".",
+          to: "../",
+          ignore: ["*.html"],
+          transform: function(content, path) {
+            if (path.endsWith("manifest.json"))
+              return Buffer.from(
+                JSON.stringify(
+                  {
+                    ...JSON.parse(content.toString()),
+                    //description: process.env.npm_package_description,
+                    //version: process.env.npm_package_version,
+                    content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
+                  },
+                  null,
+                  2
+                )
+              );
+
+            return content;
+          },
+        },
+      ],
+      { context: "public" }
+    ),
+    new WriteFilePlugin(),
+  ],
 });
 
 export const prodWebpackConfig = merge(common, {

@@ -27,7 +27,7 @@ export async function buildWebpack() {
 }
 
 export function watchWebpack() {
-  const port = 9000;
+  const port = 3000;
 
   const entry = Object.keys(devWebpackConfig.entry!).reduce(
     (accum, curr) => ({
