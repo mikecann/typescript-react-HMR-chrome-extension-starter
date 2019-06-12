@@ -7,15 +7,18 @@ import webpack from "webpack";
 import WriteFilePlugin from "write-file-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import { config } from "./config";
 
 type Options = {
   mode?: "development" | "production";
   hmrPort?: number;
+  buildNumber?: string;
 };
 
 export function makeWebpackConfig(options: Options): Configuration {
-  const mode = options.mode || "production";
+  const mode = options.mode || "development";
   const hmrPort = options.hmrPort || 9432;
+  const buildNumber = options.buildNumber || "0";
 
   function transformFile(content: Buffer, path: string) {
     if (path.endsWith("manifest.json")) {
@@ -29,12 +32,14 @@ export function makeWebpackConfig(options: Options): Configuration {
         else csp = csp.replace(";", " 'unsafe-eval';");
       }
 
+      const version = existing.version + "." + buildNumber;
+
       return Buffer.from(
         JSON.stringify(
           {
             ...existing,
-            //description: process.env.npm_package_description,
-            //version: process.env.npm_package_version,
+            name: existing.name + " - v" + version,
+            version,
             content_security_policy: csp,
           },
           null,
@@ -57,7 +62,7 @@ export function makeWebpackConfig(options: Options): Configuration {
     return path;
   }
 
-  const config: Configuration = {
+  return {
     mode,
     entry: {
       browserAction: getEntry(path.join(__dirname, "../src/browserAction/index.tsx")),
@@ -118,9 +123,12 @@ export function makeWebpackConfig(options: Options): Configuration {
         filename: "background.html",
         chunks: ["background"],
       }),
+      new webpack.DefinePlugin({
+        "process.env": Object.keys(config)
+          .filter(k => k.startsWith("REACT_APP"))
+          .reduce((accum, key) => ({ ...accum, [key]: config[key] }), {}),
+      }),
       new WriteFilePlugin(),
     ],
   };
-
-  return config;
 }

@@ -1,8 +1,11 @@
-import * as React from 'react'
-import { render } from 'react-dom'
-import App from './App'
+import * as React from "react";
+import { render } from "react-dom";
+import App from "./App";
+import { config } from "../common/config";
 
-const root = document.createElement('div')
-document.body.appendChild(root)
+console.log("Background starting up", { config });
 
-render(<App />, root)
+const root = document.createElement("div");
+document.body.appendChild(root);
+
+render(<App />, root);

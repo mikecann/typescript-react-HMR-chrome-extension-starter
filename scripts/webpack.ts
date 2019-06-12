@@ -2,8 +2,8 @@ import webpack from "webpack";
 import chalk from "chalk";
 import path from "path";
 import WebpackDevServer from "webpack-dev-server";
-import { Configuration } from "webpack";
 import { makeWebpackConfig } from "./webpack.config";
+import { config } from "./config";
 
 function wp(compiler: webpack.Compiler, mode: "run" | "watch") {
   return new Promise((resolve, reject) => {
@@ -22,14 +22,24 @@ function wp(compiler: webpack.Compiler, mode: "run" | "watch") {
 }
 
 export async function buildWebpack() {
-  const compiler = webpack(makeWebpackConfig({ mode: "production" }));
+  const mode =
+    config.NODE_ENV == "development" || config.NODE_ENV == "production"
+      ? config.NODE_ENV
+      : "development";
+
+  const compiler = webpack(makeWebpackConfig({ mode, buildNumber: config.BUILD_NUMBER }));
   return wp(compiler, "run");
 }
 
 export function watchWebpack() {
-  const hmrPort = 9624;
-  const config = makeWebpackConfig({ mode: "development", hmrPort });
-  const compiler = webpack(config);
+  const mode =
+    config.NODE_ENV == "development" || config.NODE_ENV == "production"
+      ? config.NODE_ENV
+      : "development";
+
+  const hmrPort = Number.parseInt(config.HMR_PORT);
+
+  const compiler = webpack(makeWebpackConfig({ mode, hmrPort, buildNumber: config.BUILD_NUMBER }));
 
   var server = new WebpackDevServer(compiler, {
     hot: true,
@@ -39,6 +49,4 @@ export function watchWebpack() {
   });
 
   server.listen(hmrPort);
-
-  //return wp(compiler, "watch");
 }
