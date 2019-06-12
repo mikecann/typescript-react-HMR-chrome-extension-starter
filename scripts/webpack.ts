@@ -1,9 +1,9 @@
 import webpack from "webpack";
 import chalk from "chalk";
-import { devWebpackConfig, prodWebpackConfig } from "./webpack.config";
 import path from "path";
 import WebpackDevServer from "webpack-dev-server";
 import { Configuration } from "webpack";
+import { makeWebpackConfig } from "./webpack.config";
 
 function wp(compiler: webpack.Compiler, mode: "run" | "watch") {
   return new Promise((resolve, reject) => {
@@ -22,35 +22,13 @@ function wp(compiler: webpack.Compiler, mode: "run" | "watch") {
 }
 
 export async function buildWebpack() {
-  const compiler = webpack(devWebpackConfig);
+  const compiler = webpack(makeWebpackConfig({ mode: "production" }));
   return wp(compiler, "run");
 }
 
 export function watchWebpack() {
-  const port = 3000;
-
-  const entry = Object.keys(devWebpackConfig.entry!).reduce(
-    (accum, curr) => ({
-      ...accum,
-      [curr]: [
-        "webpack-dev-server/client?http://localhost:" + port,
-        "webpack/hot/dev-server",
-        devWebpackConfig.entry![curr],
-      ],
-    }),
-    {}
-  );
-
-  const config: Configuration = {
-    ...devWebpackConfig,
-    entry,
-  };
-
-  // const config = config.entry[entryName] = [
-  //   "webpack-dev-server/client?http://localhost:" + env.PORT,
-  //   "webpack/hot/dev-server"
-  // ].concat(config.entry[entryName]);
-
+  const hmrPort = 9624;
+  const config = makeWebpackConfig({ mode: "development", hmrPort });
   const compiler = webpack(config);
 
   var server = new WebpackDevServer(compiler, {
@@ -60,7 +38,7 @@ export function watchWebpack() {
     disableHostCheck: true,
   });
 
-  server.listen(port);
+  server.listen(hmrPort);
 
   //return wp(compiler, "watch");
 }

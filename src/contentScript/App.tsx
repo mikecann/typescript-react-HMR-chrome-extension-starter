@@ -4,7 +4,7 @@ import { Counter } from "../common/Counter";
 
 const App = () => (
   <h1>
-    Hello, world!
+    Hello, Browser Action world!
     <br />
     You can update this text, and it will work!
     <Counter />

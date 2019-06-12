@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Mikes Ideal Chrome Extension Starter",
+  "name": "Typescript React HMR Chrome Extension Starter",
   "description": "A good starting point for building chrome extensions",
   "version": "1.0",
   "icons": {
@@ -21,13 +21,6 @@
       "js": ["contentScript.js"]
     }
   ],
-  "permissions": [
-    "activeTab",
-    "cookies",
-    "https://*/",
-    "http://*/",
-    "storage",
-    "tabs",
-    "notifications"
-  ]
+  "permissions": [],
+  "content_security_policy": "script-src 'self'; object-src 'self'"
 }

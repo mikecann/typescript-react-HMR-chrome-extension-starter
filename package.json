@@ -6,12 +6,12 @@
   "author": "Mike Cann <mike.cann@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server --hot"
+    "build": "cross-env NODE_ENV=production gulp build",
+    "dev": "gulp dev"
   },
   "dependencies": {
     "@hot-loader/react-dom": "^16.8.6",
     "@types/shelljs": "^0.8.5",
-    "clean-webpack-plugin": "^3.0.0",
     "csstips": "^0.3.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -27,10 +27,10 @@
     "@types/react-dom": "^16.8.4",
     "@types/webpack": "^4.4.32",
     "@types/webpack-dev-server": "^3.1.6",
-    "@types/webpack-merge": "^4.1.5",
     "awesome-typescript-loader": "^5.2.1",
     "chalk": "^2.4.2",
     "copy-webpack-plugin": "^5.0.3",
+    "cross-env": "^5.2.0",
     "fork-ts-checker-webpack-plugin": "^1.3.5",
     "gulp": "^4.0.2",
     "html-webpack-plugin": "^3.2.0",
@@ -44,7 +44,6 @@
     "webpack": "^4.33.0",
     "webpack-cli": "^3.3.3",
     "webpack-dev-server": "3.1.14",
-    "webpack-merge": "^4.2.1",
     "write-file-webpack-plugin": "^4.5.0"
   }
 }

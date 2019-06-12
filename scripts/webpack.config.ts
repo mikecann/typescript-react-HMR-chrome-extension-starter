@@ -2,102 +2,125 @@
 
 import path from "path";
 import CopyPlugin from "copy-webpack-plugin";
-import { CleanWebpackPlugin } from "clean-webpack-plugin";
-import merge from "webpack-merge";
 import { Configuration } from "webpack";
 import webpack from "webpack";
 import WriteFilePlugin from "write-file-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
-const srcDir = "../src/";
-
-const common: Configuration = {
-  entry: {
-    browserAction: path.join(__dirname, srcDir + "browserAction/index.ts"),
-    options: path.join(__dirname, srcDir + "options/index.ts"),
-    background: path.join(__dirname, srcDir + "background/index.tsx"),
-    contentScript: path.join(__dirname, srcDir + "contentScript/index.ts"),
-  },
-  output: {
-    path: path.join(__dirname, "../dist"),
-    filename: "[name].js",
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: "awesome-typescript-loader",
-        exclude: /node_modules/,
-      },
-    ],
-  },
-  resolve: {
-    extensions: [".ts", ".tsx", ".js"],
-    alias: {
-      "react-dom": "@hot-loader/react-dom",
-    },
-  },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.ProgressPlugin(),
-    // new CleanWebpackPlugin({
-    //   //dry: true,
-    //   // cleanOnceBeforeBuildPatterns: ["../../dist/**/*"],
-    //   // dangerouslyAllowCleanPatternsOutsideProject: true,
-    // }),
-    new ForkTsCheckerWebpackPlugin(),
-    new CopyPlugin(
-      [
-        {
-          from: ".",
-          to: ".",
-          ignore: ["*.html"],
-          transform: function(content, path) {
-            if (path.endsWith("manifest.json"))
-              return Buffer.from(
-                JSON.stringify(
-                  {
-                    ...JSON.parse(content.toString()),
-                    //description: process.env.npm_package_description,
-                    //version: process.env.npm_package_version,
-                    content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
-                  },
-                  null,
-                  2
-                )
-              );
-
-            return content;
-          },
-        },
-      ],
-      { context: "public" }
-    ),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "../public", "browserAction.html"),
-      filename: "browserAction.html",
-      chunks: ["browserAction"],
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "../public", "options.html"),
-      filename: "options.html",
-      chunks: ["options"],
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "../public", "background.html"),
-      filename: "background.html",
-      chunks: ["background"],
-    }),
-    new WriteFilePlugin(),
-  ],
+type Options = {
+  mode?: "development" | "production";
+  hmrPort?: number;
 };
 
-export const devWebpackConfig = merge(common, {
-  devtool: "inline-source-map",
-  mode: "development",
-});
+export function makeWebpackConfig(options: Options): Configuration {
+  const mode = options.mode || "production";
+  const hmrPort = options.hmrPort || 9432;
 
-export const prodWebpackConfig = merge(common, {
-  mode: "production",
-});
+  function transformFile(content: Buffer, path: string) {
+    if (path.endsWith("manifest.json")) {
+      const existing = JSON.parse(content.toString());
+      const defaultCsp = "script-src 'self'; object-src 'self'";
+      let csp: string = existing.content_security_policy || defaultCsp;
+
+      if (mode == "development") {
+        const index = csp.indexOf("script-src");
+        if (index == -1) csp = "script-src 'self' 'unsafe-eval'; " + csp;
+        else csp = csp.replace(";", " 'unsafe-eval';");
+      }
+
+      return Buffer.from(
+        JSON.stringify(
+          {
+            ...existing,
+            //description: process.env.npm_package_description,
+            //version: process.env.npm_package_version,
+            content_security_policy: csp,
+          },
+          null,
+          2
+        )
+      );
+    }
+
+    return content;
+  }
+
+  function getEntry(path: string) {
+    if (mode == "development")
+      return [
+        `webpack-dev-server/client?http://localhost:${hmrPort}`,
+        "webpack/hot/dev-server",
+        path,
+      ];
+
+    return path;
+  }
+
+  const config: Configuration = {
+    mode,
+    entry: {
+      browserAction: getEntry(path.join(__dirname, "../src/browserAction/index.tsx")),
+      options: getEntry(path.join(__dirname, "../src/options/index.tsx")),
+      background: getEntry(path.join(__dirname, "../src/background/index.tsx")),
+      contentScript: getEntry(path.join(__dirname, "../src/contentScript/index.tsx")),
+    },
+    output: {
+      path: path.join(__dirname, "../dist"),
+      filename: "[name].js",
+    },
+    devtool: mode == "development" ? "inline-source-map" : undefined,
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: "awesome-typescript-loader",
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    resolve: {
+      extensions: [".ts", ".tsx", ".js"],
+      alias:
+        mode == "development"
+          ? {
+              "react-dom": "@hot-loader/react-dom",
+            }
+          : {},
+    },
+    plugins: [
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.ProgressPlugin(),
+      new ForkTsCheckerWebpackPlugin(),
+      new CopyPlugin(
+        [
+          {
+            from: ".",
+            to: ".",
+            ignore: ["*.html"],
+            transform: transformFile,
+          },
+        ],
+        { context: "public" }
+      ),
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, "../public", "browserAction.html"),
+        filename: "browserAction.html",
+        chunks: ["browserAction"],
+      }),
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, "../public", "options.html"),
+        filename: "options.html",
+        chunks: ["options"],
+      }),
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, "../public", "background.html"),
+        filename: "background.html",
+        chunks: ["background"],
+      }),
+      new WriteFilePlugin(),
+    ],
+  };
+
+  return config;
+}
