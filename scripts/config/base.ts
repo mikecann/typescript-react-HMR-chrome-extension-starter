@@ -14,6 +14,6 @@ export const config = {
   CHROME_WEBSTORE_CLIENT_SECRET: "",
   CHROME_WEBSTORE_REFRESH_TOKEN: "",
 
-  // Anything that starts with "REACT_APP_" will be included in the build
+  // Anything that starts with "REACT_APP" will be included in the build
   REACT_APP_BUILD_NUMBER: "0",
 };
