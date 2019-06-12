@@ -5,6 +5,7 @@ import { cleanDist } from "./clean";
 import { config } from "./config";
 import { zipDist } from "./zip";
 import { removeManifestKeyFromDist } from "./manifest";
+import { startStorybookInDevMode } from "./storybook";
 
 console.log(chalk.cyan("---------------------------"));
 console.log(chalk.cyanBright("Starting Gulp Script with Config:"));
@@ -15,10 +16,12 @@ export const clean = cleanDist;
 
 export const build = series(clean, buildWebpack, removeManifestKeyFromDist);
 
-export const watch = watchWebpack;
-
-export const dev = series(clean, watch);
+export const dev = series(clean, parallel(watchWebpack, startStorybookInDevMode));
 
 export const zip = zipDist;
 
 export * from "./upload";
+
+export * from "./storybook";
+
+export * from "./e2e";

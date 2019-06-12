@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import { ids } from "../lib/utils/ids";
 
 export function Counter() {
   const [count, setCount] = useState(0);
@@ -14,8 +15,10 @@ export function Counter() {
   console.log(count, generateString1());
 
   return (
-    <span>
+    <span data-test-id={Counter.ids.id}>
       {count} - {generateString1()}
     </span>
   );
 }
+
+Counter.ids = ids("counter", []);

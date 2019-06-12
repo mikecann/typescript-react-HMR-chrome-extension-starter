@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "outDir": "./storybook/",
     "sourceMap": true,
     "module": "commonjs",
     "target": "es6",
     "lib": ["dom", "esnext"],
-    // "allowJs": false,
+    "allowJs": false,
     "jsx": "react",
-    // "rootDirs": ["src", "stories"],
-    // "baseUrl": "src",
-    "incremental": true,
+    "rootDirs": ["src", "stories"],
+    "baseUrl": "src",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,7 +17,9 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "declaration": true,
     "suppressImplicitAnyIndexErrors": true
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist", "output", "scripts"]
 }
