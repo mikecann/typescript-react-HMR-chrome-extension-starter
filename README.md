@@ -9,3 +9,7 @@ Using gulp is perhaps an unusual choice for build tools in this day and age but 
 ## Technologies
 
 Typescript, React, Webpack, Hot Module Replacement, React Hooks
+
+## Env Vars
+
+To include an environment variable in the build it must start with `REACT_APP` and then it will automatically be included.

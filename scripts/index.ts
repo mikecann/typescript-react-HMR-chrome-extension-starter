@@ -1,6 +1,4 @@
 import { series, parallel } from "gulp";
-import webpack from "webpack";
-import { rm, exec } from "shelljs";
 import chalk from "chalk";
 import { buildWebpack, watchWebpack } from "./webpack";
 import { cleanDist } from "./clean";
