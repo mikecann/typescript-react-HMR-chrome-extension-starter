@@ -36,6 +36,12 @@ I have added husky and pretty-quick in the mix so that prettier is run before ea
 
 This project supports storybook out of the gate. This is handy to develop your react components in isolation.
 
+## Unit Tests
+
+Unit tests are powered by Jest
+
+`gulp runUnitTests` or `yarn unit`
+
 ## E2E Tests
 
 E2E tests are powered by puppeteer. Over some time I have developed a good way of runnings these and have thus included my microframework in here to help with that.
