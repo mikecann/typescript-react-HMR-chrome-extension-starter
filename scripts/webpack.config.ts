@@ -4,7 +4,6 @@ import path from "path";
 import CopyPlugin from "copy-webpack-plugin";
 import { Configuration } from "webpack";
 import webpack from "webpack";
-import WriteFilePlugin from "write-file-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import { config } from "./config";
@@ -29,7 +28,7 @@ export function makeWebpackConfig(options: Options): Configuration {
       if (mode == "development") {
         const index = csp.indexOf("script-src");
         if (index == -1) csp = "script-src 'self' 'unsafe-eval'; " + csp;
-        else csp = csp.replace(";", " 'unsafe-eval';");
+        else csp = csp.replace(";", ` 'unsafe-eval';`);
       }
 
       const version = existing.version + "." + buildNumber;
@@ -62,7 +61,7 @@ export function makeWebpackConfig(options: Options): Configuration {
     if (mode == "development")
       return [
         `webpack-dev-server/client?http://localhost:${hmrPort}`,
-        "webpack/hot/dev-server",
+        "webpack/hot/only-dev-server",
         path,
       ];
 
@@ -116,6 +115,17 @@ export function makeWebpackConfig(options: Options): Configuration {
           use: "awesome-typescript-loader",
           exclude: /node_modules/,
         },
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader"],
+        },
+        {
+          test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/,
+          loader: "url-loader",
+          options: {
+            limit: 8192,
+          },
+        },
       ],
     },
     resolve: {
@@ -129,6 +139,7 @@ export function makeWebpackConfig(options: Options): Configuration {
     },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
+      new webpack.NoEmitOnErrorsPlugin(),
       new webpack.ProgressPlugin(),
       new ForkTsCheckerWebpackPlugin(),
       new CopyPlugin(
@@ -148,7 +159,6 @@ export function makeWebpackConfig(options: Options): Configuration {
           .filter(k => k.startsWith("REACT_APP"))
           .reduce((accum, key) => ({ ...accum, [key]: config[key] }), {}),
       }),
-      new WriteFilePlugin(),
     ],
   };
 }

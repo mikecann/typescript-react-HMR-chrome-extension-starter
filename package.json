@@ -1,8 +1,8 @@
 {
-  "name": "ypescript-react-HMR-chrome-extension-starter",
+  "name": "typescript-react-HMR-chrome-extension-starter",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:mikecann/ypescript-react-HMR-chrome-extension-starter.git",
+  "repository": "git@github.com:mikecann/typescript-react-HMR-chrome-extension-starter.git",
   "author": "Mike Cann <mike.cann@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -15,11 +15,10 @@
     "@hot-loader/react-dom": "^16.8.6",
     "@types/shelljs": "^0.8.5",
     "chrome-webstore-upload": "^0.2.2",
-    "csstips": "^0.3.0",
+    "css-loader": "^3.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-hot-loader": "^4.11.0",
-    "typestyle": "^2.0.2"
+    "react-hot-loader": "^4.11.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^4.1.13",
@@ -31,6 +30,8 @@
     "@types/copy-webpack-plugin": "^5.0.0",
     "@types/gulp": "^4.0.6",
     "@types/html-webpack-plugin": "^3.2.0",
+    "@types/jest": "^23.3.13",
+    "@types/puppeteer": "^1.9.0",
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
     "@types/storybook__react": "^4.0.2",
@@ -44,10 +45,14 @@
     "gulp": "^4.0.2",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^2.4.0",
+    "jest": "^24.3.1",
+    "jest-silent-reporter": "^0.1.2",
     "prettier": "^1.18.2",
     "pretty-quick": "^1.11.0",
+    "puppeteer": "^1.11.0",
     "shelljs": "^0.8.3",
     "storybook": "^1.0.0",
+    "ts-jest": "^24.0.0",
     "ts-loader": "^6.0.2",
     "ts-node": "^8.2.0",
     "typescript": "^3.5.1",
@@ -55,14 +60,7 @@
     "webpack-cli": "^3.3.3",
     "webpack-dev-server": "3.1.14",
     "webpack-node-externals": "^1.7.2",
-    "write-file-webpack-plugin": "^4.5.0",
-    "zip-folder": "^1.0.0",
-    "@types/puppeteer": "^1.9.0",
-    "puppeteer": "^1.11.0",
-    "@types/jest": "^23.3.13",
-    "jest": "^24.3.1",
-    "jest-silent-reporter": "^0.1.2",
-    "ts-jest": "^24.0.0"
+    "zip-folder": "^1.0.0"
   },
   "husky": {
     "hooks": {

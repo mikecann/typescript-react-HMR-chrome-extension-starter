@@ -46,6 +46,7 @@ export function watchWebpack() {
     contentBase: path.join(__dirname, "../dist"),
     headers: { "Access-Control-Allow-Origin": "*" },
     disableHostCheck: true,
+    writeToDisk: true,
   });
 
   server.listen(hmrPort);
