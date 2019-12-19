@@ -5,7 +5,6 @@ import CopyPlugin from "copy-webpack-plugin";
 import { Configuration } from "webpack";
 import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import { config } from "./config";
 
 type Options = {
@@ -82,6 +81,15 @@ export function makeWebpackConfig(options: Options): Configuration {
       .map(getHtmlPluginForEntry);
   }
 
+  function getSourcemapPlugins() {
+    if (mode == "development") return [];
+    return [
+      new webpack.SourceMapDevToolPlugin({
+        exclude: ["vendor.js"],
+      }),
+    ];
+  }
+
   return {
     mode,
     entry,
@@ -90,26 +98,31 @@ export function makeWebpackConfig(options: Options): Configuration {
       filename: "[name].js",
     },
     // Borrowed from: https://hackernoon.com/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
-    optimization: {
-      runtimeChunk: "single",
-      splitChunks: {
-        chunks: "all",
-        maxInitialRequests: Infinity,
-        minSize: 0,
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              return `npm.${packageName.replace("@", "")}`;
-            },
-          },
-        },
-      },
-    },
+    // optimization: {
+    //   runtimeChunk: "single",
+    //   splitChunks: {
+    //     chunks: "all",
+    //     maxInitialRequests: Infinity,
+    //     minSize: 0,
+    //     cacheGroups: {
+    //       vendor: {
+    //         test: /[\\/]node_modules[\\/]/,
+    //         name(module) {
+    //           const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+    //           return `npm.${packageName.replace("@", "")}`;
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
     devtool: mode == "development" ? "inline-source-map" : undefined,
     module: {
       rules: [
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: "javascript/auto",
+        },
         {
           test: /\.tsx?$/,
           use: "awesome-typescript-loader",
@@ -129,7 +142,7 @@ export function makeWebpackConfig(options: Options): Configuration {
       ],
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".js"],
+      extensions: [".ts", ".tsx", ".js", ".mjs"],
       alias:
         mode == "development"
           ? {
@@ -140,8 +153,6 @@ export function makeWebpackConfig(options: Options): Configuration {
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoEmitOnErrorsPlugin(),
-      new webpack.ProgressPlugin(),
-      new ForkTsCheckerWebpackPlugin(),
       new CopyPlugin(
         [
           {
@@ -159,6 +170,7 @@ export function makeWebpackConfig(options: Options): Configuration {
           .filter(k => k.startsWith("REACT_APP"))
           .reduce((accum, key) => ({ ...accum, [key]: config[key] }), {}),
       }),
+      ...getSourcemapPlugins(),
     ],
   };
 }

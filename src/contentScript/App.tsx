@@ -6,7 +6,7 @@ const App = () => (
   <h1>
     Hello from the Content Script!
     <br />
-    You can update this text, and it will work!
+    Unfortunately this doent auto-update, you have to refresh the page to make it work.
     <Counter />
   </h1>
 );
